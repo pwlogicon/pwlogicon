@@ -1,6 +1,7 @@
 {
   "name": "pwlogicon-platform",
   "version": "1.0.1",
+  "description": "AI-Powered Logistics Intelligence Platform with Real-time GPS Tracking and Geofencing",
   "main": "app.js",
   "engines": {
     "node": ">=18.0.0"
@@ -19,12 +20,24 @@
     "helmet": "^7.1.0",
     "cors": "^2.8.5",
     "express-rate-limit": "^6.8.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "sqlite3": "^5.1.6",
+    "geolib": "^3.3.4"
   },
   "devDependencies": {
     "nodemon": "^3.1.0",
     "eslint": "^8.56.0",
     "prettier": "^3.2.4",
     "jest": "^29.7.0"
-  }
+  },
+  "keywords": [
+    "logistics",
+    "gps-tracking",
+    "geofencing",
+    "ai",
+    "supply-chain",
+    "real-time-analytics"
+  ],
+  "author": "PWLoGiCon Group - Ian G James MBA, CEO",
+  "license": "MIT"
 }
