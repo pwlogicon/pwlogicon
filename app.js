@@ -38,21 +38,26 @@ app.use(morgan('combined')); // HTTP request logging
 // ========================
 // DATABASE CONNECTION
 // ========================
-const DB_PATH = process.env.DB_PATH || './db/logistics.db';
+const DB_DIR = path.join(__dirname, 'db');
+const DB_PATH = process.env.DB_PATH || path.join(DB_DIR, 'logistics.db');
 
-// Ensure database directory exists
-const dbDir = path.dirname(DB_PATH);
-if (!fs.existsSync(dbDir)) {
-  fs.mkdirSync(dbDir, { recursive: true });
-  console.log('✅ Created database directory:', dbDir);
+// Ensure db directory exists
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+  console.log('✅ Created database directory:', DB_DIR);
 }
 
-const db = new sqlite3.Database(DB_PATH, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
+const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
-    console.error('❌ Database connection error:', err.message);
+    console.error('❌ Database error:', err.message);
+    // Fallback to in-memory DB in production
+    if (process.env.NODE_ENV === 'production') {
+      console.log('⚠️ Using in-memory database as fallback');
+      return new sqlite3.Database(':memory:');
+    }
     process.exit(1);
   }
-  console.log('✅ Connected to SQLite database at', DB_PATH);
+  console.log('✅ Database connected at:', DB_PATH);
   
   // Initialize tables and sample data
   db.exec(`
