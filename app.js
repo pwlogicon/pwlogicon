@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const morgan = require('morgan');
 const path = require('path');
+const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const geolib = require('geolib');
 
@@ -38,6 +39,14 @@ app.use(morgan('combined')); // HTTP request logging
 // DATABASE CONNECTION
 // ========================
 const DB_PATH = process.env.DB_PATH || './db/logistics.db';
+
+// Ensure database directory exists
+const dbDir = path.dirname(DB_PATH);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+  console.log('✅ Created database directory:', dbDir);
+}
+
 const db = new sqlite3.Database(DB_PATH, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
   if (err) {
     console.error('❌ Database connection error:', err.message);
