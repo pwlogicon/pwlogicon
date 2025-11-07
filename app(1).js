@@ -1,16 +1,47 @@
+require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
+const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
-const app = express();
+// Port configuration
 const PORT = process.env.PORT || 3000;
+
+// Initialize app
+const app = express();
+
+// ======================
+// SECURITY CONFIGURATION
+// ======================
+app.use(helmet());
+app.use(cors({
+  origin: process.env.CORS_ORIGINS?.split(',') || '*'
+}));
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: 'Too many requests from this IP'
+}));
 
 // Middleware
 app.use(express.json());
 app.use(express.static('dist'));
 
-// Initialize SQLite database
-const db = new sqlite3.Database('./database.sqlite');
+// =================
+// DATABASE SETUP
+// =================
+const dbPath = process.env.NODE_ENV === 'production'
+  ? '/opt/render/project/src/database.sqlite'
+  : './database.sqlite';
+
+const db = new sqlite3.Database(dbPath, (err) => {
+  if (err) {
+    console.error('❌ Database connection error:', err.message);
+    process.exit(1);
+  }
+  console.log('✅ Connected to logistics database');
+});
 
 // Initialize database tables
 db.serialize(() => {
